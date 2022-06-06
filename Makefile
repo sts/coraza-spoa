@@ -14,26 +14,32 @@
 
 .DEFAULT_GOAL := build
 
-HOST_ARCH = $(shell which go >/dev/null 2>&1 && go env GOARCH)
-ARCH ?= $(HOST_ARCH)
-ifeq ($(ARCH),)
-	$(error mandatory variable ARCH is empty, either set it when calling the command or make sure 'go env GOARCH' works)
-endif
+BINARY = "coraza-spoa"
 
-HOST_OS = $(shell which go >/dev/null 2>&1 && go env GOOS)
-OS ?= $(HOST_OS)
-ifeq ($(OS),)
-	$(error mandatory variable OS is empty, either set it when calling the cammand or make sure 'go env GOOS' works)
-endif
+BUILD ?= $(shell git rev-parse HEAD)
 
-EXECUTABLE_FILE = coraza-spoa
+LDFLAGS=-ldflags "-X main.Version=${VERSION} -X main.Build=${BUILD}"
 
-.PHONY: build
+PLATFORMS=linux
+
+ARCHITECTURES=amd64 arm64
+
+
+default: build
+
 build:
-	@GOARCH=$(ARCH) go build -o $(EXECUTABLE_FILE) cmd/main.go
+	go build -v ${LDFLAGS} -o ${BINARY} cmd/main.go
 
-.PHONY: clean
-clean: $(BUILD_FILES)
-	@rm -rf $(EXECUTABLE_FILE)
+build_all:
+	$(foreach GOOS, $(PLATFORMS),\
+	$(foreach GOARCH, $(ARCHITECTURES), \
+	  $(shell \
+	     export GOOS=$(GOOS); \
+	     export GOARCH=$(GOARCH); \
+	     go build -v -o $(BINARY)_$(VERSION)_$(GOOS)_$(GOARCH) cmd/main.go )))
 
-
+clean:
+	$(foreach GOOS, $(PLATFORMS),\
+	$(foreach GOARCH, $(ARCHITECTURES), \
+	  $(shell \
+	     rm $(BINARY)_*_$(GOOS)_$(GOARCH))))

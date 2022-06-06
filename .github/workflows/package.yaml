@@ -46,11 +46,14 @@ jobs:
         run: sudo apt update && sudo apt -y install make pkg-config rubygems && sudo gem install fpm
 
       - name: build binary
-        run: make
+        run: VERSION=${PACKAGE_VERSION} make build_all
 
       - name: build debian
+        strategy:
+          matrix:
+            arch: [amd64 arm64]
         run: |
-         fpm -s dir -t deb -n coraza-spoa -v $PACKAGE_VERSION  \
+         fpm -s dir -t deb -a ${{ matrix.arch }} -n coraza-spoa -v $PACKAGE_VERSION  \
            --description "Coraza HAProxy SPOA" \
            --url "https://www.coraza.io" \
            --maintainer "OWASP Coraza Team" \
@@ -60,15 +63,17 @@ jobs:
            --deb-systemd ./contrib/coraza-spoa.service \
            --deb-systemd-enable \
            --config-files /etc/coraza-spoa/config.yaml \
-           ./coraza-spoa=/usr/bin/coraza-spoa \
+           ./coraza-spoa_${PACKAGE_VERSION}_linux_${{matrix.arch}}=/usr/bin/coraza-spoa \
            ./doc/config/=/usr/share/doc/coraza-spoa/haproxy-config \
            ./LICENSE=/usr/share/doc/coraza-spoa/ \
            ./config.yaml.default=/etc/coraza-spoa/config.yaml
 
       ## Publish to the "testing" repo
       - name: cloudsmith/debian/testing
-        id: cloudsmith-debian-testing
         uses: cloudsmith-io/action@master
+        strategy:
++         matrix:
++           arch: [amd64 arm64]
         with:
           api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
           command: "push"
@@ -78,7 +83,7 @@ jobs:
           distro: "any-distro"       # Your Distribution  (i.e Debian, Ubuntu)
           release: "any-version"     # Your Distribution Release (i.e xenial, buster)
           republish: "true"          # needed ONLY if version is not changing
-          file: "coraza-spoa_${PACKAGE_VERSION}_amd64.deb" # debian package filename
+          file: "coraza-spoa_${PACKAGE_VERSION}_${{maxtrix.arch}}.deb" # debian package filename
            #
            #      ## Publish tags to the "release" repo
            #      - name: cloudsmith/debian/release
