@@ -75,7 +75,7 @@ jobs:
           format: "deb"
           owner: "ono"               # Your Cloudsmith account name or org name (namespace)
           repo: "coraza-spoa"        # Your Cloudsmith Repository name (slug)
-          distro: "any-distro"       # Your Distribution  (i.e Debian, Ubuntu)
+          distro: "any-version"      # Your Distribution  (i.e Debian, Ubuntu)
           release: "testing"         # Your Distribution Release (i.e xenial, buster)
           republish: "true"          # needed ONLY if version is not changing
           file: "coraza-spoa_${PACKAGE_VERSION}_amd64.deb" # debian package filename
