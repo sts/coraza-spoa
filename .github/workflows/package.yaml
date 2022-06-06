@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
     steps:
 
       - name: Print Go version and environment
@@ -49,9 +52,6 @@ jobs:
         run: VERSION=${PACKAGE_VERSION} make build_all
 
       - name: build debian
-        strategy:
-          matrix:
-            arch: [amd64 arm64]
         run: |
          fpm -s dir -t deb -a ${{ matrix.arch }} -n coraza-spoa -v $PACKAGE_VERSION  \
            --description "Coraza HAProxy SPOA" \
@@ -71,9 +71,6 @@ jobs:
       ## Publish to the "testing" repo
       - name: cloudsmith/debian/testing
         uses: cloudsmith-io/action@master
-        strategy:
-          matrix:
-            arch: [amd64, arm64]
         with:
           api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
           command: "push"
@@ -84,7 +81,9 @@ jobs:
           release: "any-version"     # Your Distribution Release (i.e xenial, buster)
           republish: "true"          # needed ONLY if version is not changing
           file: "coraza-spoa_${PACKAGE_VERSION}_${{maxtrix.arch}}.deb" # debian package filename
-           #
+
+
+
            #      ## Publish tags to the "release" repo
            #      - name: cloudsmith/debian/release
            #        if: ${{ steps.vars.outputs.tag_special != '' }}
