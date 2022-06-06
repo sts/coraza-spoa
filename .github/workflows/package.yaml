@@ -72,8 +72,8 @@ jobs:
       - name: cloudsmith/debian/testing
         uses: cloudsmith-io/action@master
         strategy:
-+         matrix:
-+           arch: [amd64, arm64]
+          matrix:
+            arch: [amd64, arm64]
         with:
           api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
           command: "push"
