@@ -80,7 +80,7 @@ jobs:
           distro: "any-distro"       # Your Distribution  (i.e Debian, Ubuntu)
           release: "any-version"     # Your Distribution Release (i.e xenial, buster)
           republish: "true"          # needed ONLY if version is not changing
-          file: "coraza-spoa_${PACKAGE_VERSION}_${{maxtrix.arch}}.deb" # debian package filename
+          file: "coraza-spoa_${PACKAGE_VERSION}_${{matrix.arch}}.deb" # debian package filename
 
 
 
