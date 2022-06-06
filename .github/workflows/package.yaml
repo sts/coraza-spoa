@@ -23,22 +23,38 @@ jobs:
           go env
           printf "\n\nSystem environment:\n\n"
           env
-          echo "::set-output name=version_tag::${GITHUB_REF/refs\/tags\//}"
-          echo "::set-output name=short_sha::$(git rev-parse --short HEAD)"
-          echo "::set-output name=date_str::$(date +%Y%m%d%H%M)"
-          # Add "pip install" CLI tools to PATH
-          echo ~/.local/bin >> $GITHUB_PATH
-          # Parse semver
-          TAG=${GITHUB_REF/refs\/tags\//}
+
+          echo "VERSION_TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+          echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
           SEMVER_RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z\.-]*\)'
-          TAG_MAJOR=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\1#"`
-          TAG_MINOR=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\2#"`
-          TAG_PATCH=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\3#"`
-          TAG_SPECIAL=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\4#"`
-          echo "::set-output name=tag_major::${TAG_MAJOR}"
-          echo "::set-output name=tag_minor::${TAG_MINOR}"
-          echo "::set-output name=tag_patch::${TAG_PATCH}"
-          echo "::set-output name=tag_special::${TAG_SPECIAL}"
+          echo "TAG_MAJOR=`echo ${TAG#v}   | sed -e "s#$SEMVER_RE#\1#"`" >> $GITHUB_ENV
+          echo "TAG_MINOR=`echo ${TAG#v}   | sed -e "s#$SEMVER_RE#\2#"`  >> $GITHUB_ENV
+          echo "TAG_PATCH=`echo ${TAG#v}   | sed -e "s#$SEMVER_RE#\3#"`  >> $GITHUB_ENV
+          echo "TAG_SPECIAL=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\4#"`  >> $GITHUB_ENV
+
+          if [[ $GITHUB_REF_TYPE == "branch" ]]; then
+            echo "CZA_PACKAGE_VERSION=$(date +%Y%m%d%H%M)_${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+          else
+            echo "CZA_PACKAGE_VERSION=$VERSION_TAG" >> $GITHUB_ENV
+          fi
+
+
+          #echo "::set-output name=version_tag::${GITHUB_REF/refs\/tags\//}"
+          #echo "::set-output name=short_sha::$(git rev-parse --short HEAD)"
+          #echo "::set-output name=date_str::$(date +%Y%m%d%H%M)"
+          ## Add "pip install" CLI tools to PATH
+          #echo ~/.local/bin >> $GITHUB_PATH
+          ## Parse semver
+          #TAG=${GITHUB_REF/refs\/tags\//}
+          #SEMVER_RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z\.-]*\)'
+          #TAG_MAJOR=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\1#"`
+          #TAG_MINOR=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\2#"`
+          #TAG_PATCH=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\3#"`
+          #TAG_SPECIAL=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\4#"`
+          #echo "::set-output name=tag_major::${TAG_MAJOR}"
+          #echo "::set-output name=tag_minor::${TAG_MINOR}"
+          #echo "::set-output name=tag_patch::${TAG_PATCH}"
+          #echo "::set-output name=tag_special::${TAG_SPECIAL}"
 
       - name: Package version
         id: pkgvars
