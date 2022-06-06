@@ -44,7 +44,7 @@ jobs:
         id: pkgvars
         run: |
           if [[ $GITHUB_REF_TYPE == "branch" ]]; then
-            echo "::set-output name=package_version::${{ steps.vars.outputs.package_version }}_${{ steps.vars.outputs.short_sha }}"
+            echo "::set-output name=package_version::${{ steps.vars.outputs.date_str }}_${{ steps.vars.outputs.short_sha }}"
           else
             echo "::set-output name=package_version::${{ steps.vars.outputs.version_tag }}"
           fi
@@ -66,7 +66,7 @@ jobs:
 
       - name: build-debian
         run: |
-         echo ${{ steps.vars.outputs.package_version }}
+         echo ${{ steps.pkgvars.outputs.package_version }}
          fpm -s dir -t deb -n coraza-spoa -v ${{ steps.pkgvars.outputs.package_version }} \
            --description "Coraza HAProxy SPOA" \
            --url "https://www.coraza.io" \
