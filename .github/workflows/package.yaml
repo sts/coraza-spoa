@@ -33,56 +33,24 @@ jobs:
           echo TAG_SPECIAL=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\4#"` >> $GITHUB_ENV
 
           if [[ $GITHUB_REF_TYPE == "branch" ]]; then
-            echo "CZA_PACKAGE_VERSION=$(date +%Y%m%d%H%M)_${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+            echo "PACKAGE_VERSION=$(date +%Y%m%d%H%M)-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
           else
-            echo "CZA_PACKAGE_VERSION=$VERSION_TAG" >> $GITHUB_ENV
-          fi
-
-
-          #echo "::set-output name=version_tag::${GITHUB_REF/refs\/tags\//}"
-          #echo "::set-output name=short_sha::$(git rev-parse --short HEAD)"
-          #echo "::set-output name=date_str::$(date +%Y%m%d%H%M)"
-          ## Add "pip install" CLI tools to PATH
-          #echo ~/.local/bin >> $GITHUB_PATH
-          ## Parse semver
-          #TAG=${GITHUB_REF/refs\/tags\//}
-          #SEMVER_RE='[^0-9]*\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\)\([0-9A-Za-z\.-]*\)'
-          #TAG_MAJOR=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\1#"`
-          #TAG_MINOR=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\2#"`
-          #TAG_PATCH=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\3#"`
-          #TAG_SPECIAL=`echo ${TAG#v} | sed -e "s#$SEMVER_RE#\4#"`
-          #echo "::set-output name=tag_major::${TAG_MAJOR}"
-          #echo "::set-output name=tag_minor::${TAG_MINOR}"
-          #echo "::set-output name=tag_patch::${TAG_PATCH}"
-          #echo "::set-output name=tag_special::${TAG_SPECIAL}"
-
-      - name: Package version
-        id: pkgvars
-        run: |
-          if [[ $GITHUB_REF_TYPE == "branch" ]]; then
-            echo "::set-output name=package_version::${{ steps.vars.outputs.date_str }}_${{ steps.vars.outputs.short_sha }}"
-          else
-            echo "::set-output name=package_version::${{ steps.vars.outputs.version_tag }}"
+            echo "PACKAGE_VERSION=$VERSION_TAG" >> $GITHUB_ENV
           fi
 
       - uses: actions/checkout@v3
         with:
           ref: package_build
 
-      - name: install-dependencies
+      - name: install dependencies
         run: sudo apt update && sudo apt -y install make pkg-config rubygems && sudo gem install fpm
 
-      - name: runx
-        run: |
-          git branch
-          ls -l
-
-      - name: build-binary
+      - name: build binary
         run: make
 
-      - name: build-debian
+      - name: build debian
         run: |
-         fpm -s dir -t deb -n coraza-spoa -v $CZA_PACKAGE_VERSION  \
+         fpm -s dir -t deb -n coraza-spoa -v $PACKAGE_VERSION  \
            --description "Coraza HAProxy SPOA" \
            --url "https://www.coraza.io" \
            --maintainer "OWASP Coraza Team" \
@@ -97,20 +65,20 @@ jobs:
            ./LICENSE=/usr/share/doc/coraza-spoa/ \
            ./config.yaml.default=/etc/coraza-spoa/config.yaml
 
-           #      ## Publish to the "testing" repo
-           #      - name: cloudsmith/debian/testing
-           #        id: cloudsmith-debian-testing
-           #        uses: cloudsmith-io/action@master
-           #        with:
-           #          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-           #          command: "push"
-           #          format: "deb"
-           #          owner: "ono"               # Your Cloudsmith account name or org name (namespace)
-           #          repo: "coraza-spoa"        # Your Cloudsmith Repository name (slug)
-           #          distro: "any-distro"       # Your Distribution  (i.e Debian, Ubuntu)
-           #          release: "testing"         # Your Distribution Release (i.e xenial, buster)
-           #          republish: "true"          # needed ONLY if version is not changing
-           #          file: "YOUR-FILENAME.deb"  # debian package filename
+      ## Publish to the "testing" repo
+      - name: cloudsmith/debian/testing
+        id: cloudsmith-debian-testing
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: "push"
+          format: "deb"
+          owner: "ono"               # Your Cloudsmith account name or org name (namespace)
+          repo: "coraza-spoa"        # Your Cloudsmith Repository name (slug)
+          distro: "any-distro"       # Your Distribution  (i.e Debian, Ubuntu)
+          release: "testing"         # Your Distribution Release (i.e xenial, buster)
+          republish: "true"          # needed ONLY if version is not changing
+          file: "coraza-spoa*.deb"   # debian package filename
            #
            #      ## Publish tags to the "release" repo
            #      - name: cloudsmith/debian/release
