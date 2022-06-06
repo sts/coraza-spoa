@@ -71,12 +71,10 @@ jobs:
            --maintainer "OWASP Coraza Team" \
            --license Apache-2.0 \
            --vendor OWASP \
-           \
            --after-install ./contrib/coraza-spoa.postinst \
            --deb-systemd ./contrib/coraza-spoa.service \
            --deb-systemd-enable \
            --config-files /etc/coraza-spoa/config.yaml \
-           \
            ./coraza-spoa=/usr/bin/coraza-spoa \
            ./doc/config/=/usr/share/doc/coraza-spoa/haproxy-config \
            ./LICENSE=/usr/share/doc/coraza-spoa/ \
