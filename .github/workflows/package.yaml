@@ -3,7 +3,7 @@ name: Build Packages
 
 on:
   push:
-    branch:
+    branches:
       - main
       - package_build
     tags:
