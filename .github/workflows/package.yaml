@@ -65,6 +65,7 @@ jobs:
 
       - name: build-debian
         run: |
+         echo ${{ steps.vars.outputs.package_version }}
          fpm -s dir -t deb -n coraza-spoa -v ${{ steps.vars.outputs.package_version }} \
            --description "Coraza HAProxy SPOA" \
            --url "https://www.coraza.io" \
