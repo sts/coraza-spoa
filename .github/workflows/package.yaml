@@ -75,30 +75,25 @@ jobs:
           api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
           command: "push"
           format: "deb"
+          owner: "ono"                # Your Cloudsmith account name or org name (namespace)
+          repo: "coraza-spoa-testing" # Your Cloudsmith Repository name (slug)
+          distro: "any-distro"        # Your Distribution  (i.e Debian, Ubuntu)
+          release: "any-version"      # Your Distribution Release (i.e xenial, buster)
+          file: "coraza-spoa_${PACKAGE_VERSION}_${{matrix.arch}}.deb" # debian package filename
+
+      ## Publish tags to the "main" repo
+      - name: cloudsmith/debian/main
+        if: ${{ github.ref_type == 'tag' }}
+        uses: cloudsmith-io/action@master
+        with:
+          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
+          command: "push"
+          format: "deb"
           owner: "ono"               # Your Cloudsmith account name or org name (namespace)
           repo: "coraza-spoa"        # Your Cloudsmith Repository name (slug)
           distro: "any-distro"       # Your Distribution  (i.e Debian, Ubuntu)
           release: "any-version"     # Your Distribution Release (i.e xenial, buster)
-          republish: "true"          # needed ONLY if version is not changing
-          file: "coraza-spoa_${PACKAGE_VERSION}_${{matrix.arch}}.deb" # debian package filename
-
-
-
-           #      ## Publish tags to the "release" repo
-           #      - name: cloudsmith/debian/release
-           #        if: ${{ steps.vars.outputs.tag_special != '' }}
-           #        id: cloudsmith-debian-release
-           #        uses: cloudsmith-io/action@master
-           #        with:
-           #          api-key: ${{ secrets.CLOUDSMITH_API_KEY }}
-           #          command: "push"
-           #          format: "deb"
-           #          owner: "ono"               # Your Cloudsmith account name or org name (namespace)
-           #          repo: "coraza-spoa"        # Your Cloudsmith Repository name (slug)
-           #          distro: "any-distro"       # Your Distribution  (i.e Debian, Ubuntu)
-           #          release: "release"         # Your Distribution Release (i.e xenial, buster)
-           #          republish: "true"          # needed ONLY if version is not changing
-           #          file: "YOUR-FILENAME.deb"  # debian package filename
+          file: "coraza-spoa_${PACKAGE_VERSION}_${{matrix.arch}}.deb"  # debian package filename
 
       #- name: cloudsmith/rpm
       #  id: cloudsmith-rpm
