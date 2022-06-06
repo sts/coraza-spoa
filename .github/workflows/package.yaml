@@ -39,9 +39,6 @@ jobs:
           echo "::set-output name=tag_minor::${TAG_MINOR}"
           echo "::set-output name=tag_patch::${TAG_PATCH}"
           echo "::set-output name=tag_special::${TAG_SPECIAL}"
-
-      - name: Set Version
-        run: |
           if [[ $GITHUB_REF_TYPE == "branch" ]]; then
             echo "::set-output name=package_version::${date_str}_${short_sha}"
           else
