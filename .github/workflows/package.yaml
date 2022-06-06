@@ -42,8 +42,11 @@ jobs:
 
       - name: Set Version
         run: |
-          echo "::set-output name=package_version::${version_tag}"
-          echo "::set-output name=package_version::${date_str}_${short_sha}"
+          if [[ $GITHUB_REF_TYPE == "branch" ]]; then
+            echo "::set-output name=package_version::${date_str}_${short_sha}"
+          else
+            echo "::set-output name=package_version::${version_tag}"
+          fi
 
       - uses: actions/checkout@v3
         with:
@@ -63,9 +66,9 @@ jobs:
       - name: build
         run: make
 
-      - name: build debian
         run: |
-         fpm -s dir -t deb -n coraza-spoa --config-files /etc/coraza-spoa/config.yaml -v ${steps.vars.outputs.version_tag} \
+         fpm -s dir -t deb -n coraza-spoa -v ${{ steps.vars.outputs.package_version }} \
+           --config-files /etc/coraza-spoa/config.yaml
            --description "Coraza HAProxy SPOA" \
            --url "https://www.coraza.io" \
            --deb-systemd ./contrib/coraza-spoa.service \
