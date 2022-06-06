@@ -39,10 +39,14 @@ jobs:
           echo "::set-output name=tag_minor::${TAG_MINOR}"
           echo "::set-output name=tag_patch::${TAG_PATCH}"
           echo "::set-output name=tag_special::${TAG_SPECIAL}"
+
+      - name: Package version
+        id: pkgvars
+        run: |
           if [[ $GITHUB_REF_TYPE == "branch" ]]; then
-            echo "::set-output name=package_version::${date_str}_${short_sha}"
+            echo "::set-output name=package_version::${{ steps.vars.outputs.package_version }}_${{ steps.vars.outputs.short_sha }}"
           else
-            echo "::set-output name=package_version::${version_tag}"
+            echo "::set-output name=package_version::${{ steps.vars.outputs.version_tag }}"
           fi
 
       - uses: actions/checkout@v3
@@ -63,7 +67,7 @@ jobs:
       - name: build-debian
         run: |
          echo ${{ steps.vars.outputs.package_version }}
-         fpm -s dir -t deb -n coraza-spoa -v ${{ steps.vars.outputs.package_version }} \
+         fpm -s dir -t deb -n coraza-spoa -v ${{ steps.pkgvars.outputs.package_version }} \
            --description "Coraza HAProxy SPOA" \
            --url "https://www.coraza.io" \
            --maintainer "OWASP Coraza Team" \
