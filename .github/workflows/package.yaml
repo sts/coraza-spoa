@@ -52,20 +52,18 @@ jobs:
         with:
           ref: package_build
 
-      - name: install fpm
-        run: sudo apt update && sudo apt -y install rubygems && sudo gem install fpm
-
-      - name: install dependencies
-        run: sudo apt update && sudo apt -y install make pkg-config
+      - name: install-dependencies
+        run: sudo apt update && sudo apt -y install make pkg-config rubygems && sudo gem install fpm
 
       - name: runx
         run: |
           git branch
           ls -l
 
-      - name: build
+      - name: build-binary
         run: make
 
+      - name: build-debian
         run: |
          fpm -s dir -t deb -n coraza-spoa -v ${{ steps.vars.outputs.package_version }} \
            --config-files /etc/coraza-spoa/config.yaml
