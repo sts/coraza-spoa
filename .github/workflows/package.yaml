@@ -82,8 +82,7 @@ jobs:
 
       - name: build-debian
         run: |
-         echo ${{ steps.pkgvars.outputs.package_version }}
-         fpm -s dir -t deb -n coraza-spoa -v ${{ steps.pkgvars.outputs.package_version }} \
+         fpm -s dir -t deb -n coraza-spoa -v $CZA_PACKAGE_VERSION  \
            --description "Coraza HAProxy SPOA" \
            --url "https://www.coraza.io" \
            --maintainer "OWASP Coraza Team" \
