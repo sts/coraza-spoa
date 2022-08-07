@@ -176,7 +176,7 @@ for DOCKER_TARGET in "${DOCKER_TARGETS[@]}"; do
 
             echo "🐳 Building the Docker image (coreruleset ${CORERULESET_VERSION})"
 
-            $DRY docker build "${CRS_DOCKER_BUILD_ARGS[@]}" --build-arg "CORERULESET_VERSION=${CORERULESET_VERSION}" .
+            $DRY docker buildx "${CRS_DOCKER_BUILD_ARGS[@]}" --build-arg "CORERULESET_VERSION=${CORERULESET_VERSION}" .
         done
 
     else
@@ -187,7 +187,7 @@ for DOCKER_TARGET in "${DOCKER_TARGETS[@]}"; do
           -t "${TARGET_DOCKER_TAG}"
         )
 
-        $DRY docker build  "${NONCRS_DOCKER_BUILD_ARGS[@]}" .
+        $DRY docker buildx  "${NONCRS_DOCKER_BUILD_ARGS[@]}" .
     fi
 
 done
