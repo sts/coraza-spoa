@@ -1,8 +1,11 @@
 #!/bin/bash
 
 if [ "${1}x" == "x" ] || [ "${1}" == "--help" ] || [ "${1}" == "-h" ]; then
-  echo "Usage: ${0} "
-  echo "You can use the following ENV variables to customize the build:"
+  echo "Usage: ${0} <branch> [--push]"
+  echo "  branch       The branch or tag to build. Required."
+  echo "  --push       Pushes the built Docker image to the registry."
+  echo ""
+  echo "You can use the following ENV variables to customize the build:"a
   echo "  TAG         The version part of the docker tag."
   echo "              Default:"
   echo "                When <branch>=main:    snapshot"
@@ -25,7 +28,11 @@ if [ "${1}x" == "x" ] || [ "${1}" == "--help" ] || [ "${1}" == "-h" ]; then
   echo "              containing version e.g. v2.5.1 -> v2.5"
   echo "              Default: \${DOCKER_REGISTRY}/\${DOCKER_ORG}/\${DOCKER_REPO}:<MAJOR>.<MINOR>"
   echo "  DOCKERFILE  The name of Dockerfile to use."
-  echo "              Default: Dockerfile"§
+  echo "              Default: Dockerfile"
+  echo "  BUILDX_PLATFORMS"
+  echo "            Specifies the platform(s) to build the image for."
+  echo "            Example: 'linux/amd64,linux/arm64'"
+  echo "            Default: 'linux/amd64'"
   echo "  CORERULESET_VERSIONS A space separated list of coreruleset version tags."
   echo "              Default: 3.3.2 4.0.0-rc1"
   echo "  DRY_RUN     Prints all build statements instead of running them."
@@ -136,11 +143,25 @@ for DOCKER_TARGET in "${DOCKER_TARGETS[@]}"; do
         --label "org.opencontainers.image.vendor=Coraza"
         --label "org.opencontainers.image.licenses=Apache-2.0"
     )
+    DOCKER_BUILD_ARGS+=(--platform "${BUILDX_PLATFORM-linux/amd64}")
+
 
     if [ -d ".git" ]; then
       DOCKER_BUILD_ARGS+=(
         --label "org.label-schema.vcs-ref=${GIT_REF}"
         --label "org.opencontainers.image.revision=${GIT_REF}"
+      )
+    fi
+
+    if [ "${2}" == "--push" ]; then
+      # output type=docker does not work with pushing
+      DOCKER_BUILD_ARGS+=(
+        --output=type=image
+        --push
+      )
+    else
+      DOCKER_BUILD_ARGS+=(
+        --output=type=docker
       )
     fi
 

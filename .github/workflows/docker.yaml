@@ -48,7 +48,7 @@ jobs:
         run: VERSION=${PACKAGE_VERSION} ARCH=${{ matrix.arch }} make
 
       - name: Docker
-        run: ./docker-build.sh ${DOCKER_VERSION}
+        run: ./docker-build.sh ${DOCKER_VERSION} --push
         env:
           DOCKER_REGISTRY: "ghcr.io"
           DOCKER_ORG: "sts"
