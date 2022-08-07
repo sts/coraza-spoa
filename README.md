@@ -78,6 +78,8 @@ With this rule, all unsafe requests will be rejected. You can find the example H
 
 ## Docker
 
+This repo contains everything to run a instance of haproxy, coraza-spoa and a mockserv, which is used as backend. To use:
+
 - Build the coraza-spoa image `docker-compose build`
-- Run haproxy, coraza-spoa and a mock server `docker-compose up`
+- Run haproxy, coraza-spoa and a mockserver `docker-compose up`
 - Perform a request which gets blocked by the WAF: `curl http://localhost:4000/\?x\=/etc/passwd`
