@@ -1,5 +1,5 @@
 ---
-name: docker
+name: Docker Build
 
 on:
   push:
@@ -19,6 +19,21 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Print Go version and environment
+        id: vars
+        run: |
+          printf "Using go at: $(which go)\n"
+          printf "Go version: $(go version)\n"
+          printf "\n\nGo environment:\n\n"
+          go env
+          printf "\n\nSystem environment:\n\n"
+          env
+
+          if [[ $GITHUB_REF_TYPE == "branch" ]]; then
+            echo "DOCKER_VERSION=$(date +%Y%m%d%H%M)-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+          else
+            echo "DOCKER_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+          fi
 
       - uses: actions/checkout@v3
 
@@ -33,7 +48,7 @@ jobs:
         run: VERSION=${PACKAGE_VERSION} ARCH=${{ matrix.arch }} make
 
       - name: Docker
-        run: ./docker-build.sh
+        run: ./docker-build.sh ${DOCKER_VERSION}
         env:
           DOCKER_REGISTRY: "ghcr.io"
           DOCKER_ORG: "sts"
