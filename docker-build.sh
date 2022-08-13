@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 if [ "${1}x" == "x" ] || [ "${1}" == "--help" ] || [ "${1}" == "-h" ]; then
   echo "Usage: ${0} <branch> [--push]"
   echo "  branch       The branch or tag to build. Required."
