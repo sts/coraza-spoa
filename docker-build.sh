@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 if [ "${1}x" == "x" ] || [ "${1}" == "--help" ] || [ "${1}" == "-h" ]; then
   echo "Usage: ${0} <branch> [--push]"
   echo "  branch       The branch or tag to build. Required."
@@ -143,7 +145,7 @@ for DOCKER_TARGET in "${DOCKER_TARGETS[@]}"; do
         --label "org.opencontainers.image.vendor=Coraza"
         --label "org.opencontainers.image.licenses=Apache-2.0"
     )
-    DOCKER_BUILD_ARGS+=(--platform "${BUILDX_PLATFORM-linux/amd64}")
+    DOCKER_BUILD_ARGS+=(--platform "${BUILDX_PLATFORM-linux/amd64,linux/arm64}")
 
 
     if [ -d ".git" ]; then
@@ -176,7 +178,8 @@ for DOCKER_TARGET in "${DOCKER_TARGETS[@]}"; do
 
             echo "🐳 Building the Docker image (coreruleset ${CORERULESET_VERSION})"
 
-            $DRY docker buildx "${CRS_DOCKER_BUILD_ARGS[@]}" --build-arg "CORERULESET_VERSION=${CORERULESET_VERSION}" .
+            $DRY docker buildx build "${CRS_DOCKER_BUILD_ARGS[@]}" --build-arg "CORERULESET_VERSION=${CORERULESET_VERSION}" .
+            unset CRS_DOCKER_BUILD_ARGS
         done
 
     else
@@ -187,7 +190,9 @@ for DOCKER_TARGET in "${DOCKER_TARGETS[@]}"; do
           -t "${TARGET_DOCKER_TAG}"
         )
 
-        $DRY docker buildx  "${NONCRS_DOCKER_BUILD_ARGS[@]}" .
+        $DRY docker buildx build "${NONCRS_DOCKER_BUILD_ARGS[@]}" .
     fi
+
+    unset DOCKER_BUILD_ARGS
 
 done
