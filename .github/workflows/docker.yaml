@@ -20,25 +20,9 @@ jobs:
       contents: read
       packages: write
     steps:
-      #      - name: Print Go version and environment
-      #        id: vars
-      #        run: |
-      #          printf "Using go at: $(which go)\n"
-      #          printf "Go version: $(go version)\n"
-      #          printf "\n\nGo environment:\n\n"
-      #          go env
-      #          printf "\n\nSystem environment:\n\n"
-      #          env
-      #
-      #          if [[ $GITHUB_REF_TYPE == "branch" ]]; then
-      #            echo "DOCKER_VERSION=$(date +%Y%m%d%H%M)-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
-      #          else
-      #            echo "DOCKER_VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
-      #          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action
-        with:
-          version: latest
 
       - name: Inspect builder
         run: |
