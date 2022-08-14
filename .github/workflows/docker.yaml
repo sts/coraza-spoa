@@ -44,11 +44,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Image
-        run: docker buildx build \
-            --tag ghcr.io/sts/coraza-spoa \
-            --platform linux/amd64,linux/arm64,linux/arm/v7 \
-            --progress plain \
-            .
+        run: docker buildx build --tag ghcr.io/sts/coraza-spoa --platform linux/amd64,linux/arm64,linux/arm/v7 --progress plain .
 
       - name: Build Image (CRS3)
         run: docker buildx build \
