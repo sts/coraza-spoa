@@ -1,15 +1,20 @@
-FROM golang:1.18-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.18-alpine AS builder
 
 WORKDIR /build
-
 COPY . /build
 
-RUN apk add --no-cache \
-        gc-dev \
-        gcc \
-        musl-dev
+# Download dependencies for all platforms once
+RUN go mod download
 
-RUN CGO_ENABLED=1 GOARCH=amd64 GOOS=linux go build -o coraza-spoa cmd/main.go
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+
+RUN apk add --no-cache gc-dev gcc musl-dev
+
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg \
+    CGO_ENABLED=1 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+       go build -o coraza-spoa cmd/main.go
 
 # ---
 FROM alpine:3.16 AS main
