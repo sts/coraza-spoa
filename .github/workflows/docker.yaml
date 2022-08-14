@@ -50,7 +50,7 @@ jobs:
         run: docker buildx build --progress plain --tag ghcr.io/sts/coraza-spoa:crs-3.3.2 --build-arg CORERULESET_VERSION=3.3.2 --platform linux/amd64,linux/arm64,linux/arm/v7 --target coreruleset --push .
 
       - name: Build Image (CRS4)
-        run: docker buildx build --progress plain --tag ghcr.io/sts/coraza-spoa:crs-4.0.0-rc1 --build-arg CORERULESET_VERSION=4.0.0-rc1 --platform linux/amd64,linux/arm64,linux/arm/v7 --target coreruleset .
+        run: docker buildx build --progress plain --tag ghcr.io/sts/coraza-spoa:crs-4.0.0-rc1 --build-arg CORERULESET_VERSION=4.0.0-rc1 --platform linux/amd64,linux/arm64,linux/arm/v7 --target coreruleset --push .
 
 
       #- name: Docker
