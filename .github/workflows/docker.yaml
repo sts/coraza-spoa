@@ -87,8 +87,8 @@ jobs:
           file: docker/coraza-spoa/Dockerfile
           push: true
           target: coreruleset
-          build-args:
-            - CORERULESET_VERSION=3.3.2
+          build-args: |
+            CORERULESET_VERSION=3.3.2
           tags: ${{ steps.meta3.outputs.tags }}
           labels: ${{ steps.meta3.outputs.labels }}
 
@@ -113,8 +113,8 @@ jobs:
           file: docker/coraza-spoa/Dockerfile
           push: true
           target: coreruleset
-          build-args:
-            - CORERULESET_VERSION=4.0.0-rc1
+          build-args: |
+            CORERULESET_VERSION=4.0.0-rc1
           tags: ${{ steps.meta4.outputs.tags }}
           labels: ${{ steps.meta4.outputs.labels }}
 
