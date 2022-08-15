@@ -20,11 +20,17 @@ jobs:
       contents: read
       packages: write
     steps:
+      -
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Set up Docker Buildx
+      -
+        name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Inspect builder
+      -
+        name: Inspect builder
         run: |
           echo "Name:      ${{ steps.buildx.outputs.name }}"
           echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
@@ -32,30 +38,89 @@ jobs:
           echo "Flags:     ${{ steps.buildx.outputs.flags }}"
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Login to GitHub Container Registry
+      -
+        name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Image
-        run: docker buildx build --progress plain --file docker/coraza-spoa/Dockerfile --tag ghcr.io/sts/coraza-spoa --platform linux/amd64,linux/arm64,linux/arm/v7 --progress plain --push .
+      -
+        name: Docker meta
+        id: meta1
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/sts/coraza-spoa
+          tags: |
+            type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
-      - name: Build Image (CRS3)
-        run: docker buildx build --progress plain --file docker/coraza-spoa/Dockerfile --tag ghcr.io/sts/coraza-spoa:crs-3.3.2 --build-arg CORERULESET_VERSION=3.3.2 --platform linux/amd64,linux/arm64,linux/arm/v7 --target coreruleset --push .
+      -
+        name: Image: Main
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          file: docker/coraza-spoa/Dockerfile
+          push: true
+          tags: ${{ steps.meta1.outputs.tags }}
+          labels: ${{ steps.meta1.outputs.labels }}
 
-      - name: Build Image (CRS4)
-        run: docker buildx build --progress plain --file docker/coraza-spoa/Dockerfile --tag ghcr.io/sts/coraza-spoa:crs-4.0.0-rc1 --build-arg CORERULESET_VERSION=4.0.0-rc1 --platform linux/amd64,linux/arm64,linux/arm/v7 --target coreruleset --push .
+
+      -
+        name: Docker meta
+        id: meta3
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/sts/coraza-spoa
+          tags: |
+            type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+          flavor: |
+            suffix=crs3,onlatest=true
+
+      -
+        name: Image: CRS3
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          file: docker/coraza-spoa/Dockerfile
+          push: true
+          target: coreruleset
+          build-args:
+            - CORERULESET_VERSION=3.3.2
+          tags: ${{ steps.meta3.outputs.tags }}
+          labels: ${{ steps.meta3.outputs.labels }}
 
 
-      #- name: Docker
-      #  run: ./docker-build.sh ${DOCKER_VERSION} --push
-      #  env:
-      #    DOCKER_REGISTRY: "ghcr.io"
-      #    DOCKER_ORG: "sts"
-      #    DOCKER_REPO: "coraza-spoa"
+      -
+        name: Docker meta
+        id: meta4
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/sts/coraza-spoa
+          tags: |
+            type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+          flavor: |
+            suffix=crs4,onlatest=true
+
+      -
+        name: Image: CRS4
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          file: docker/coraza-spoa/Dockerfile
+          push: true
+          target: coreruleset
+          build-args:
+            - CORERULESET_VERSION=4.0.0-rc1
+          tags: ${{ steps.meta4.outputs.tags }}
+          labels: ${{ steps.meta4.outputs.labels }}
+
+#      - name: Build Image
+#        run: docker buildx build --progress plain --file docker/coraza-spoa/Dockerfile --tag ghcr.io/sts/coraza-spoa --platform linux/amd64,linux/arm64,linux/arm/v7 --progress plain --push .
+#      - name: Build Image (CRS3)
+#        run: docker buildx build --progress plain --file docker/coraza-spoa/Dockerfile --tag ghcr.io/sts/coraza-spoa:crs-3.3.2 --build-arg CORERULESET_VERSION=3.3.2 --platform linux/amd64,linux/arm64,linux/arm/v7 --target coreruleset --push .
+#      - name: Build Image (CRS4)
+#        run: docker buildx build --progress plain --file docker/coraza-spoa/Dockerfile --tag ghcr.io/sts/coraza-spoa:crs-4.0.0-rc1 --build-arg CORERULESET_VERSION=4.0.0-rc1 --platform linux/amd64,linux/arm64,linux/arm/v7 --target coreruleset --push .
