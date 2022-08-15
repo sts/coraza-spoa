@@ -56,7 +56,7 @@ jobs:
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       -
-        name: Image: Main
+        name: Image - Main
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -79,7 +79,7 @@ jobs:
             suffix=crs3,onlatest=true
 
       -
-        name: Image: CRS3
+        name: Image - CRS3
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -105,7 +105,7 @@ jobs:
             suffix=crs4,onlatest=true
 
       -
-        name: Image: CRS4
+        name: Image - CRS4
         uses: docker/build-push-action@v3
         with:
           context: .
