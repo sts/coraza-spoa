@@ -55,6 +55,8 @@ jobs:
           tags: |
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'docker_build2') }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       -
         name: Image - Main
@@ -74,12 +76,13 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ghcr.io/sts/coraza-spoa
+          flavor: |
+            suffix=-crs3,onlatest=true
           tags: |
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'docker_build2') }}
-          flavor: |
-            suffix=-crs3,onlatest=true
-
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
       -
         name: Image - CRS3
         uses: docker/build-push-action@v3
@@ -101,11 +104,13 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ghcr.io/sts/coraza-spoa
+          flavor: |
+            suffix=-crs4,onlatest=true
           tags: |
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'docker_build2') }}
-          flavor: |
-            suffix=-crs4,onlatest=true
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       -
         name: Image - CRS4
