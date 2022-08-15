@@ -47,7 +47,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       -
-        name: Docker meta
+        name: Docker metadata - Main
         id: meta1
         uses: docker/metadata-action@v4
         with:
@@ -69,7 +69,7 @@ jobs:
 
 
       -
-        name: Docker meta
+        name: Docker metadata - CRS3
         id: meta3
         uses: docker/metadata-action@v4
         with:
@@ -78,7 +78,7 @@ jobs:
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'docker_build2') }}
           flavor: |
-            suffix=crs3,onlatest=true
+            suffix=-crs3,onlatest=true
 
       -
         name: Image - CRS3
@@ -96,7 +96,7 @@ jobs:
 
 
       -
-        name: Docker meta
+        name: Docker metadata - CRS4
         id: meta4
         uses: docker/metadata-action@v4
         with:
@@ -105,7 +105,7 @@ jobs:
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'docker_build2') }}
           flavor: |
-            suffix=crs4,onlatest=true
+            suffix=-crs4,onlatest=true
 
       -
         name: Image - CRS4
