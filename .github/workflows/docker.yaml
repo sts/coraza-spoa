@@ -54,6 +54,7 @@ jobs:
           images: ghcr.io/sts/coraza-spoa
           tags: |
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'docker_build2') }}
 
       -
         name: Image - Main
@@ -75,6 +76,7 @@ jobs:
           images: ghcr.io/sts/coraza-spoa
           tags: |
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'docker_build2') }}
           flavor: |
             suffix=crs3,onlatest=true
 
@@ -101,6 +103,7 @@ jobs:
           images: ghcr.io/sts/coraza-spoa
           tags: |
             type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=raw,value=snapshot,enable=${{ github.ref == format('refs/heads/{0}', 'docker_build2') }}
           flavor: |
             suffix=crs4,onlatest=true
 
